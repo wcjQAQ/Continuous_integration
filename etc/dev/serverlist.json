@@ -1,0 +1,11 @@
+{
+ "tomcat": {
+           "test": {
+                "master": {
+                         "dev01": {"hostips": ["127.0.0.1"],"ports": [10001]},
+                         "test01": {"hostips": ["127.0.0.1"],"ports": [10011]},
+                         "online": {"hostips": ["127.0.0.1"],"ports": [20001,20002]}
+                         }
+                }
+           }
+}

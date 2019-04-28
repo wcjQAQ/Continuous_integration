@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid black;
+}
+p {
+    background: aquamarine;
+}
+</style>
+<div>
+    <div class="">
+        <div>
+            <h2>online</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>项目名称</th>
+                    <th>scale</th>
+                    <th>tag</th>
+                    <th>rollback</th>
+                    <th>uptime</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in tag_list %}
+                    {% if 's' in i['scale'] and 'test' not in i['scale'] or 'online' in i['scale'] %}
+                    <tr>
+                        <td><b>{{ i["project"] }}</b></td>
+                        <td>{{ i["scale"] }}</td>
+                        <td>{{ i["tag"] }}</td>
+                        <td>{{ i["rollback"] }}</td>
+                        <td>{{ i["update_time"] }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+            <h2>dev</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>项目名称</th>
+                    <th>scale</th>
+                    <th>tag</th>
+                    <th>rollback</th>
+                    <th>uptime</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in tag_list %}
+                    {% if 'dev' in i['scale'] %}
+                    <tr>
+                        <td><b>{{ i["project"] }}</b></td>
+                        <td>{{ i["scale"] }}</td>
+                        <td>{{ i["tag"] }}</td>
+                        <td>{{ i["rollback"] }}</td>
+                        <td>{{ i["update_time"] }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+                    <h2>test</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>项目名称</th>
+                    <th>scale</th>
+                    <th>tag</th>
+                    <th>rollback</th>
+                    <th>uptime</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for i in tag_list %}
+                    {% if 'test'  in i['scale'] %}
+                    <tr>
+                        <td><b>{{ i["project"] }}</b></td>
+                        <td>{{ i["scale"] }}</td>
+                        <td>{{ i["tag"] }}</td>
+                        <td>{{ i["rollback"] }}</td>
+                        <td>{{ i["update_time"] }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
