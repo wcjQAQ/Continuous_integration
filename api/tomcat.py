@@ -3,6 +3,7 @@ from flask import make_response, jsonify
 from etc.configure import GetConfigure
 from lib.deploytomcat import deploy
 import time
+from lib.moduledocker import DockerAPI
 class UpdateTomcat(Resource):
     def __init__(self):
         self.servername = 'tomcat'
@@ -23,6 +24,7 @@ class UpdateTomcat(Resource):
         hps = serverlist[self.servername][project][module][scale]
         hostips = hps['hostips']
         ports = hps['ports']
+        print('host:%s, port:%s' % (hostips,ports))
 
          #添加删除机制, 删除旧节点
         __db = GetConfigure.get_mysql_client()
@@ -77,11 +79,17 @@ class UpdateTomcat(Resource):
         print("查看当前项目是否在tag_list表创建:%s" %sql)
         if __db.existence(sql):
             ##查询结果: list ---> tuple ---> str
-            rollback_tag = __db.select(sql)[0][0]
-            print('回滚tag为: %s' %rollback_tag)
-            sql = 'update tag_list set tag="%s",rollback_tag="%s",update_time="%s" where scale="%s" and project="%s" and module="%s";' % (tag, rollback_tag, now_date, scale, project, module)
-            print('更新当前项目的tag_list状态:%s' %sql)
-            __db.update(sql)
+            now_tag = __db.select(sql)[0][0]
+            #print('当前数据库tag:%s'%now_tag)
+            if tag == now_tag:
+                print('当前tag为:%s,输入tag为:%s,无需更新' %(now_tag,tag))
+                pass
+            else:
+                rollback_tag = __db.select(sql)[0][0]
+                print('回滚tag为: %s' %rollback_tag)
+                sql = 'update tag_list set tag="%s",rollback_tag="%s",update_time="%s" where scale="%s" and project="%s" and module="%s";' % (tag, rollback_tag, now_date, scale, project, module)
+                print('更新当前项目的tag_list状态:%s' %sql)
+                __db.update(sql)
         else:
             sql = 'insert into tag_list (project, module, scale, tag, rollback_tag, create_time, update_time) VALUES ("%s", "%s", "%s", "%s", "%s", "%s", "%s");' \
                        % (project, module, scale, tag, tag, now_date, now_date)
@@ -90,19 +98,23 @@ class UpdateTomcat(Resource):
 
 
         #删除不再serverlist.json的节点
-        #if old_server_list:
-        #    print("删除所有不用的节点")
-        #    for i in old_server_list:
-        #        print(i)
-        #        port = i[1]
-        #        hostip = i[0]
-        #        container_name = '%s_%s_%s_%s_%s' % (self.servername, project, module, scale, old_port)
-        #        rm_container = deploy(project, module, scale, hostip, port, container_name, image, tag)
-        #        rm_container.remove()
-        #        sql = 'delete from `server_list` where hostip="%s" and port=%d and module="%s" and project="%s";' % (
-        #        hostip, port, module, project)
-        #        print("删除server_list的节点:%s" %sql)
-        #        __db.insert(sql)
+        print("删除所有不用的节点 %s" %old_server_list)
+        if old_server_list:
+            for i in old_server_list:
+                print(i)
+                port = i[1]
+                hostip = i[0]
+                container_name = '%s_%s_%s_%s_%s' % (self.servername, project, module, scale, old_port)
+                #rm_container = deploy(project, module, scale, hostip, port, container_name, image, tag)
+                #rm_container.remove()
+                rm_container = DockerAPI(hostip)
+                rm_container.stop_container(container_name)
+                rm_container.remove_container(container_name)
+
+                sql = 'delete from `server_list` where hostip="%s" and port=%d and module="%s" and project="%s";' % (
+                hostip, port, module, project)
+                print("删除server_list的节点:%s" %sql)
+                __db.insert(sql)
 
 
 
