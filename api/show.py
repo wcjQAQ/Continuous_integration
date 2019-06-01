@@ -25,7 +25,22 @@ class showtag(Resource):
             update_time = d[7]
             #tag_list.append({'project': '%s' %project, 'module': '%s' %module, 'scale': '%s' %scale, 'tag': '%s' %tag, 'rollback': '%s' %rollbak_tag, 'create_time': '%s' %create_time, 'update_time': '%s' %update_time})
             tag_list.append({'project': '%s_%s' % (project,module), 'scale': '%s' %scale, 'tag': '%s' %tag, 'rollback': '%s' %rollbak_tag, 'create_time': '%s' %create_time, 'update_time': '%s' %update_time})
-        return make_response(render_template('tag.html', tag_list=tag_list))
+        #return make_response(render_template('tag.html', tag_list=tag_list))
+        return tag_list
+
+    def post(self):
+        pass
+
+
+class showproject(Resource):
+    def get(self):
+        sql = 'select  distinct  project,module  from server_list;'
+        __db = GetConfigure.get_mysql_client()
+        info = __db.select(sql)
+        server_list = []
+        for server in info:
+             server_list.append({"project":server[0],"module":server[1]})
+        return server_list
 
     def post(self):
         pass
