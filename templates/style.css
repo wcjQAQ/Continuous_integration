@@ -1,0 +1,30 @@
+ul{
+ float: left;
+ margin: 0px;
+ padding: 0px;
+ list-style-type:none;
+ overflow:hidden;
+}
+li{
+    display: inline;
+    list-style-type: none;
+}
+button {
+    border: 0;
+    background-color: transparent;
+    outline: none;
+    display:block;
+width:120px;
+font-weight:bold;
+color:#FFFFFF;
+background-color:#bebebe;
+text-align:center;
+padding:4px;
+text-decoration:none;
+text-transform:uppercase;
+}
+
+button:hover,button:active
+{
+background-color:#cc0000;
+}
