@@ -1,45 +1,64 @@
 <! DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>restful</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="vue-AllProject" >
-        <div v-for="i in info">
-                <ul>
-                    <li><button v-on:click="OneTags(i['project'],i['module'])">{{ i['project'] }}-{{ i['module'] }}</button></li>
-                </ul>
-        </div>
-        <br>
-        <br>
+  <html>
 
-        <div class="table">
-            <table border="1">
-                <thead>
-                <tr>
-                    <th>项目名称</th>
-                    <th>scale</th>
-                    <th>tag</th>
-                    <th>rollback</th>
-                    <th>uptime</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="i in tags">
-                    <td><b>{{ i["project"] }}</b></td>
-                    <td>{{ i["scale"] }}</td>
-                    <td>{{ i["tag"] }}</td>
-                    <td>{{ i["rollback"] }}</td>
-                     <td>{{ i["update_time"] }}</td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
+  <head>
+    <meta charset="utf-8">
+    <title>tag页面</title>
+    <link rel="stylesheet" href="index.css">
+  </head>
+
+  <body>
+    <div id="vue-AllProject">
+      <el-menu class="el-menu-demo" mode="horizontal" background-color="#545c64" text-color="#fff"
+        :default-active=activeName active-text-color="3399FF">
+        <el-menu-item index="test" @click="listmodules('test')">test</el-menu-item>
+        <el-menu-item index="gct" @click="listmodules('gct')">gct</el-menu-item>
+        <el-menu-item index="lly" @click="listmodules('lly')">lly</el-menu-item>
+        <el-menu-item index="kaoqin" @click="listmodules('kaoqin')">kaoqin</el-menu-item>
+      </el-menu>
+      <el-tabs
+        type="border-card"
+        v-model="Onemodule"
+        @tab-click="listtags"
+        setCurrentRow='security'
+        class="toptabs"
+      >
+        <el-tab-pane
+          v-for="onemodule in  modules"
+          :label="onemodule"
+          :name="onemodule"
+        >
+        <h2>Online</h2>
+          <el-table :data="onlinetags" style="width: 1000px;">
+            <el-table-column prop="name" label="项目名称" width="180"></el-table-column>
+            <el-table-column prop="scale"  label="scale" width="180" ></el-table-column>
+            <el-table-column prop="tag" label="tag"></el-table-column>
+            <el-table-column prop="rollback_tag" label="回滚tag"></el-table-column>
+            <!-- <el-table-column prop="uptime_time" label="更新时间"></el-table-column> -->
+          </el-table>
+          <h2>test</h2>
+          <el-table :data="testtags" style="width: 1000px;">
+            <el-table-column prop="name" label="项目名称" width="180"></el-table-column>
+            <el-table-column prop="scale"  label="scale" width="180" ></el-table-column>
+            <el-table-column prop="tag" label="tag"></el-table-column>
+            <el-table-column prop="rollback_tag" label="回滚tag"></el-table-column>
+            <!-- <el-table-column prop="uptime_time" label="更新时间"></el-table-column> -->
+          </el-table>
+        </el-tab-pane>
+        <h2>dev</h2>
+        <el-table :data="devtags" style="width: 1000px;">
+          <el-table-column prop="name" label="项目名称" width="180"></el-table-column>
+          <el-table-column prop="scale"  label="scale" width="180" ></el-table-column>
+          <el-table-column prop="tag" label="tag"></el-table-column>
+          <el-table-column prop="rollback_tag" label="回滚tag"></el-table-column>
+          <!-- <el-table-column prop="uptime_time" label="更新时间"></el-table-column> -->
+        </el-table>
+      </el-tabs>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.bootcss.com/axios/0.18.0/axios.js"></script>
+    <script src="vue.js"></script>
+    <script src="axios.js"></script>
+    <script src="index.js"></script>
     <script src="app.js"></script>
-</body>
-</html>
+  </body>
+
+  </html>

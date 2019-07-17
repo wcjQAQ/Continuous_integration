@@ -12,7 +12,7 @@ def hello_world():
 CORS(app, supports_credentials=True)
 api.add_resource(UpdateTomcat, '/api/update/tomcat')
 api.add_resource(showtag, '/api/showtag/<project>/<module>')
-api.add_resource(showproject, '/api/showproject')
+api.add_resource(showproject, '/api/showmodule/<project>')
 
 if __name__ == '__main__':
     app.run(

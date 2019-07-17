@@ -1,46 +1,45 @@
 from flask import jsonify, abort, make_response, render_template
 from flask_restful import Resource, reqparse, fields
 from etc.configure import GetConfigure
+import re
+import operator
 class showtag(Resource):
     def get(self, project, module):
-        #parser = reqparse.RequestParser()
-        #parser.add_argument('project', type=str, location=['form', 'json', 'values', 'args'], required=True)
-        #parser.add_argument('module', type=str, location=['form', 'json', 'values', 'args'], required=True)
-        # strict = True 如果参数中出现解析器中未定义的参数抛出异常
-        #args = parser.parse_args(strict=True)
-        #project = args['project']
-        #module = args['module']
-        sql = 'select * from tag_list where project="%s" and module="%s"' % (project, module)
+        sql = "select project,module,scale,tag,rollback_tag from tag_list where project = '%s' and module = '%s'" % (project, module)
         __db = GetConfigure.get_mysql_client()
         info = __db.select(sql)
-        print(sql)
-        tag_list = []
-        for d in info:
-            project = d[1]
-            module = d[2]
-            scale = d[3]
-            tag = d[4]
-            rollbak_tag = d[5]
-            create_time = d[6]
-            update_time = d[7]
-            #tag_list.append({'project': '%s' %project, 'module': '%s' %module, 'scale': '%s' %scale, 'tag': '%s' %tag, 'rollback': '%s' %rollbak_tag, 'create_time': '%s' %create_time, 'update_time': '%s' %update_time})
-            tag_list.append({'project': '%s_%s' % (project,module), 'scale': '%s' %scale, 'tag': '%s' %tag, 'rollback': '%s' %rollbak_tag, 'create_time': '%s' %create_time, 'update_time': '%s' %update_time})
-        #return make_response(render_template('tag.html', tag_list=tag_list))
-        return tag_list
-
-    def post(self):
-        pass
-
+        list_online = []
+        list_test = []
+        list_dev = []
+        list_all = []
+        for i in info:
+            Project = i[0]
+            Module = i[1]
+            Scale = i[2]
+            Tag = i[3]
+            Rollback = i[4]
+            if re.match(r'(online)', Scale):
+                list_online.append({'name': '%s_%s' %(Project,Module),'scale':'%s' %(Scale), 'tag':'%s' %(Tag), 'rollback_tag':'%s' %(Rollback)})
+            elif re.match(r'(dev)', Scale):
+                list_dev.append({'name': '%s_%s' %(Project,Module),'scale':'%s' %(Scale), 'tag':'%s' %(Tag), 'rollback_tag':'%s' %(Rollback)})
+            elif re.match(r'(test)', Scale):
+                list_test.append({'name': '%s_%s' %(Project,Module),'scale':'%s' %(Scale), 'tag':'%s' %(Tag), 'rollback_tag':'%s' %(Rollback)})
+            else:
+                pass
+        list_all.append(sorted(list_online,key=operator.itemgetter('scale')))
+        list_all.append(sorted(list_test,key=operator.itemgetter('scale')))
+        list_all.append(sorted(list_dev,key=operator.itemgetter('scale')))
+        return list_all
 
 class showproject(Resource):
-    def get(self):
-        sql = 'select  distinct  project,module  from server_list;'
+    def get(self, project):
+        sql = "select module from module_list where project = '%s' " % (project)
         __db = GetConfigure.get_mysql_client()
         info = __db.select(sql)
-        server_list = []
-        for server in info:
-             server_list.append({"project":server[0],"module":server[1]})
-        return server_list
-
+        list_module = []
+        for i in info:
+            Module = i[0]
+            list_module.append(Module)
+        return list_module
     def post(self):
         pass

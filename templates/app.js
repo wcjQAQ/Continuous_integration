@@ -1,41 +1,66 @@
 new Vue({
     el:"#vue-AllProject",
-    data () {
+    data() {
         return {
-          info: null,
-          project:"test",
-          module:"master",
-          tags: null
-        }
-    },
+          activeName: '',
+          modules: '',
+          Onemodule: '',
+          onlinetags: '',
+          testtags: '',
+          devtags:''
+        };
+      },
     methods: {
-        OneTags: function(project,module){
-            this.project = project;
-            this.module = module;
-            axios
-                .get('http://127.0.0.1:5000/api/showtag/' + this.project + '/' + this.module )
-                .then(response => (this.tags = response.data))
-            var obj = {
-                project: project,
-                module: module  
-            }
-
-            localStorage.setItem('type', JSON.stringify(obj));
+      listmodules(project) {
+        axios
+          .get("http://127.0.0.1:5000/api/showmodule/" + project)
+          .then(response => (this.modules = response.data));
+          this.activeName = project
+      },
+      listtags() {
+        axios
+          .get(
+            "http://127.0.0.1:5000/api/showtag/" +
+              this.activeName +
+              "/" +
+              this.Onemodule
+          )
+          .then(response => {
+            this.onlinetags = response.data[0]
+            this.testtags = response.data[1]
+            this.devtags = response.data[2]
+          });
+          var obj = {
+            Project: this.activeName,
+            Onemodule: this.Onemodule
         }
-    },
-    mounted () {
-
-        var obj = localStorage.getItem('type');
-
-        obj = JSON.parse(obj);
-
-        axios
-            .get('http://127.0.0.1:5000/api/showproject')
-            .then(response => (this.info = response.data))
-
-        axios
-            .get('http://127.0.0.1:5000/api/showtag/' + obj.project + '/' + obj.module )
-            .then(response => (this.tags = response.data))
+    localStorage.setItem('type', JSON.stringify(obj));
+    // console.log(obj)
     }
-});
+  },
+  mounted() {
+    var obj = localStorage.getItem('type');
+    obj = JSON.parse(obj);
+    this.Onemodule = obj.Onemodule
+    this.activeName = obj.Project
+    console.log(this.activeName,this.Onemodule)
+    if (this.Onemodule && this.activeName) {
+      axios
+      .get(
+        "http://127.0.0.1:5000/api/showtag/" +
+          this.activeName +
+          "/" +
+          this.Onemodule
+      )
+      .then(response => {
+        this.onlinetags = response.data[0]
+        this.testtags = response.data[1]
+        this.devtags = response.data[2]
+      });
+      axios
+      .get("http://127.0.0.1:5000/api/showmodule/" + this.activeName)
+      .then(response => (this.modules = response.data));
+  }
+}
 
+})
